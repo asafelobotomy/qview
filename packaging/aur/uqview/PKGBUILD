@@ -5,7 +5,7 @@ pkgver=0.0.0
 pkgrel=1
 pkgdesc='Fast image viewer for uQ: view, mark up and set as wallpaper'
 arch=('x86_64' 'aarch64')
-url='https://github.com/asafelobotomy/qview'
+url='https://github.com/asafelobotomy/uqview'
 license=('GPL-3.0-or-later')
 depends=('qt6-base' 'qt6-declarative' 'qt6-svg' 'qt6-imageformats' 'kimageformats' 'xdg-utils' 'gcc-libs' 'glibc')
 makedepends=('cargo' 'clang')
@@ -19,24 +19,24 @@ options=(!lto)
 sha256sums=('SKIP')
 
 prepare() {
-  cd "qview-$pkgver"  # GitHub names the archive's folder after the repository
+  cd "$pkgname-$pkgver"
   export RUSTUP_TOOLCHAIN=stable
   cargo fetch --locked --target "$(rustc -vV | sed -n 's/host: //p')"
 }
 
 build() {
-  cd "qview-$pkgver"  # GitHub names the archive's folder after the repository
+  cd "$pkgname-$pkgver"
   export RUSTUP_TOOLCHAIN=stable CARGO_TARGET_DIR=target
   cargo build --frozen --release --workspace
 }
 
 check() {
-  cd "qview-$pkgver"  # GitHub names the archive's folder after the repository
+  cd "$pkgname-$pkgver"
   export RUSTUP_TOOLCHAIN=stable CARGO_TARGET_DIR=target
   cargo test --frozen --release -p uqview-core
 }
 
 package() {
-  cd "qview-$pkgver"  # GitHub names the archive's folder after the repository
+  cd "$pkgname-$pkgver"
   DESTDIR="$pkgdir" scripts/install-files.sh
 }
