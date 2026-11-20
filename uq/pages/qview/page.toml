@@ -1,0 +1,81 @@
+# Qview's page in uQ Settings (under Apps): open pictures with Qview, and how it browses,
+# looks and saves mark-ups. Installed to /usr/share/uq/settings/pages/qview/ by qview's
+# package; inert without uQ. Everything goes through the `qview` command line; reference:
+# docs/settings-pages.md in uQ.
+uq_api = 3
+id = "qview"
+name = "Qview"
+icon = "qview"
+category = "apps"
+qml = "Page.qml"
+keywords = ["image", "picture", "photo", "viewer", "qview", "screenshot", "mark up", "annotate"]
+
+[[setting]]
+id = "default"
+label = "Open pictures with Qview"
+keywords = ["default", "image viewer", "gwenview", "mime", "file type"]
+
+[[setting]]
+id = "sort"
+label = "Order of pictures"
+keywords = ["sort", "name", "date", "size", "newest", "oldest"]
+
+[[setting]]
+id = "wrap_around"
+label = "After the last picture, start again"
+keywords = ["loop", "wrap", "repeat"]
+
+[[setting]]
+id = "show_thumbnails"
+label = "Show thumbnails"
+keywords = ["strip", "filmstrip", "previews"]
+
+[[setting]]
+id = "background"
+label = "Background"
+keywords = ["black", "checkerboard", "transparency", "dark"]
+
+[[setting]]
+id = "upscale_small"
+label = "Enlarge small pictures to fit"
+keywords = ["upscale", "zoom", "fit", "small"]
+
+[[setting]]
+id = "markup_save"
+label = "Save mark-ups"
+keywords = ["annotate", "copy", "overwrite", "original"]
+
+[[setting]]
+id = "confirm_delete"
+label = "Ask before moving to the trash"
+keywords = ["delete", "trash", "confirm"]
+
+[requires]
+bins = ["qview"]
+
+[[command]]
+id = "config"
+argv = ["/usr/bin/qview", "config", "show", "--json"]
+output = "json"
+timeout_ms = 5000
+watch = { files = ["~/.config/qview/config.toml"] }
+
+[[command]]
+id = "config-set"
+argv = ["/usr/bin/qview", "config", "set", "--json"]
+output = "json"
+timeout_ms = 5000
+args = [{ name = "key", pattern = "^(sort|sort_descending|background|show_thumbnails|wrap_around|confirm_delete|upscale_small|markup_save)$" }, { name = "value", pattern = "^[a-z]{1,10}$" }]
+
+[[command]]
+id = "default"
+argv = ["/usr/bin/qview", "default", "status", "--json"]
+output = "json"
+timeout_ms = 5000
+watch = { files = ["~/.config/mimeapps.list"] }
+
+[[command]]
+id = "default-set"
+argv = ["/usr/bin/qview", "default", "set", "--json"]
+output = "json"
+timeout_ms = 10000

@@ -1,0 +1,17 @@
+[workspace]
+resolver = "3"
+members = ["crates/qview-core", "crates/qview"]
+# The window needs Qt 6; the default build and tests don't.
+default-members = ["crates/qview-core"]
+
+[workspace.package]
+edition = "2024"
+rust-version = "1.90"
+version = "0.1.0"
+license = "GPL-3.0-or-later"
+repository = "https://github.com/asafelobotomy/qview"
+
+[profile.release]
+lto = "thin"
+codegen-units = 1
+strip = true

@@ -1,0 +1,64 @@
+name: Release
+
+# Pushing a tag v<version> (or tag-release.yml, which starts this on the tag it creates) builds
+# the release binary in Arch, checks the tag matches Cargo.toml, publishes a GitHub release with
+# the binary and SHA256SUMS, and uploads the AUR files (PKGBUILD + .SRCINFO) as the `aur`
+# artifact. Pushing them to the AUR stays manual (the AUR key stays on your machine).
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    container: archlinux:latest
+    steps:
+      - run: pacman -Syu --noconfirm --needed base-devel git rustup github-cli curl clang qt6-base qt6-declarative qt6-svg
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Check the version
+        run: |
+          want=${GITHUB_REF_NAME#v}
+          have=$(sed -n 's/^version = "\(.*\)"/\1/p' Cargo.toml | head -1)
+          [ "$want" = "$have" ] || { echo "::error::tag $want but Cargo.toml says $have"; exit 1; }
+      - name: Build and test
+        run: |
+          rustup default stable
+          cargo build --release --locked --workspace
+          cargo test --release --locked --workspace
+      - name: Collect artifacts
+        run: |
+          v=${GITHUB_REF_NAME#v}
+          mkdir -p dist
+          cp target/release/qview "dist/qview-$v-x86_64-linux"
+          (cd dist && sha256sum qview-* > SHA256SUMS)
+      - name: Publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" --title "Qview ${GITHUB_REF_NAME#v}" --generate-notes dist/*
+  aur:
+    needs: release
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    container: archlinux:base-devel
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.ref_name }}
+          persist-credentials: false
+      - name: Write the AUR files
+        env:
+          TAG: ${{ github.ref_name }}
+        run: scripts/aur-files.sh "$TAG"
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: aur
+          path: aur/
+          include-hidden-files: true
+          if-no-files-found: ignore

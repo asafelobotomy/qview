@@ -1,0 +1,59 @@
+name: ci
+on:
+  push:
+    branches: [main]
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - run: rustup toolchain install stable --profile minimal -c rustfmt,clippy
+      - run: cargo fmt --all --check
+      - run: cargo clippy --all-targets -- -D warnings
+      - run: cargo test
+  qml:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 22
+      - run: node --test tests/uq/logic.test.mjs tests/gui/logic.test.mjs
+      - name: Install Qt Quick and qmltestrunner
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y qt6-declarative-dev-tools qml6-module-qtquick qml6-module-qtquick-layouts \
+            qml6-module-qtquick-controls qml6-module-qttest qml6-module-qtqml-workerscript \
+            qml6-module-qtquick-window qml6-module-qtquick-templates qml6-module-qtqml qml6-module-qtqml-models
+      - run: QT_QPA_PLATFORM=offscreen /usr/lib/qt6/bin/qmltestrunner -import tests/uq/stub -input tests/uq/tst_page.qml
+  # The window needs a recent Qt, so it builds on Arch, its target distribution.
+  window:
+    runs-on: ubuntu-latest
+    container: archlinux:latest
+    steps:
+      - name: Install the toolchain and Qt 6
+        run: |
+          pacman -Syu --noconfirm --needed git rust clang base-devel qt6-base qt6-declarative qt6-svg \
+            qt6-imageformats breeze-icons imagemagick
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - run: cargo clippy -p qview --all-targets -- -D warnings
+      - run: cargo test -p qview
+      - name: The window starts, loads every QML file and shows a picture
+        run: |
+          cargo build -p qview
+          mkdir -p /tmp/pics
+          magick -size 640x400 gradient:'#3e8ef7'-'#e5484d' /tmp/pics/a.png
+          magick -size 300x300 xc:'#46a758' /tmp/pics/b.jpg
+          QT_FORCE_STDERR_LOGGING=1 QT_QPA_PLATFORM=offscreen timeout 6 ./target/debug/qview /tmp/pics/a.png 2>&1 | tee /tmp/gui.log || true
+          QT_FORCE_STDERR_LOGGING=1 QT_QPA_PLATFORM=offscreen timeout 6 ./target/debug/qview --markup /tmp/pics/b.jpg 2>&1 | tee -a /tmp/gui.log || true
+          ! grep -E "ReferenceError|TypeError|unavailable|Unable to assign|is not installed|is not a type|Cannot assign" /tmp/gui.log
+      - name: The command line answers
+        run: |
+          export QVIEW_CONFIG=/tmp/qview.toml
+          ./target/debug/qview --version
+          ./target/debug/qview config set --json sort date | grep -q '"ok":true'
+          ./target/debug/qview config show --json | grep -q '"sort":"date"'
+          ! ./target/debug/qview config set --json sort random
