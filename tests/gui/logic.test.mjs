@@ -1,4 +1,4 @@
-// Tests for the window's pure rules (crates/qview/qml/logic.js).
+// Tests for the window's pure rules (crates/uqview/qml/logic.js).
 //   node --test 'tests/*/*.test.mjs'
 import assert from "node:assert/strict";
 import { createRequire } from "node:module";
@@ -10,8 +10,8 @@ import { fileURLToPath } from "node:url";
 
 const here = dirname(fileURLToPath(import.meta.url));
 // logic.js starts `.pragma library`; without that line it's plain CommonJS.
-const src = readFileSync(join(here, "..", "..", "crates", "qview", "qml", "logic.js"), "utf8").replace(/^\.pragma library$/m, "");
-const dir = mkdtempSync(join(tmpdir(), "qview-logic-"));
+const src = readFileSync(join(here, "..", "..", "crates", "uqview", "qml", "logic.js"), "utf8").replace(/^\.pragma library$/m, "");
+const dir = mkdtempSync(join(tmpdir(), "uqview-logic-"));
 writeFileSync(join(dir, "logic.cjs"), src);
 const L = createRequire(import.meta.url)(join(dir, "logic.cjs"));
 

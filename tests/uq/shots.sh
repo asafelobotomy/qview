@@ -1,5 +1,5 @@
 #!/bin/sh
-# Saves a screenshot of the Qview page: tests/uq/shots.sh <outdir>
+# Saves a screenshot of the uQview page: tests/uq/shots.sh <outdir>
 set -e
 out=${1:?usage: shots.sh <outdir>}
 mkdir -p "$out"

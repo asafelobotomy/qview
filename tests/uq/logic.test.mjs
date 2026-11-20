@@ -1,4 +1,4 @@
-// Tests for the Qview page (uq/pages/qview/): logic.js and the manifest.
+// Tests for the uQview page (uq/pages/uqview/): logic.js and the manifest.
 //   node --test 'tests/*/*.test.mjs'
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
@@ -10,22 +10,22 @@ import { loadLogic } from "./load-logic.mjs";
 import { parseToml } from "./toml-lite.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
-const pageDir = join(here, "..", "..", "uq", "pages", "qview");
+const pageDir = join(here, "..", "..", "uq", "pages", "uqview");
 const L = loadLogic(join(pageDir, "logic.js"));
 const manifest = parseToml(readFileSync(join(pageDir, "page.toml"), "utf8"));
 const qml = readFileSync(join(pageDir, "Page.qml"), "utf8");
-const configRs = readFileSync(join(here, "..", "..", "crates", "qview-core", "src", "config.rs"), "utf8");
+const configRs = readFileSync(join(here, "..", "..", "crates", "uqview-core", "src", "config.rs"), "utf8");
 
 test("the manifest is uq_api 3 and every command is used", () => {
   assert.equal(manifest.uq_api, 3);
-  assert.equal(manifest.id, "qview");
+  assert.equal(manifest.id, "uqview");
   for (const c of manifest.command) {
-    assert.equal(c.argv[0], "/usr/bin/qview");
+    assert.equal(c.argv[0], "/usr/bin/uqview");
     assert.ok(qml.includes(`"${c.id}"`), `command ${c.id} is never used`);
   }
 });
 
-test("config-set takes exactly the keys qview knows", () => {
+test("config-set takes exactly the keys uqview knows", () => {
   const set = manifest.command.find((c) => c.id === "config-set");
   const keys = set.args[0].pattern.replace(/^\^\(|\)\$$/g, "").split("|").sort();
   const known = [...configRs.matchAll(/^\s+\("([a-z_]+)", (?:Some|None)/gm)].map((m) => m[1]).sort();
@@ -45,7 +45,7 @@ test("answers", () => {
 });
 
 test("the default app line", () => {
-  assert.equal(L.defaultLine(L.defaultState({ code: 0, output: { default: true, current: "io.github.asafelobotomy.qview.desktop" } })), "Pictures open in Qview.");
+  assert.equal(L.defaultLine(L.defaultState({ code: 0, output: { default: true, current: "io.github.asafelobotomy.uqview.desktop" } })), "Pictures open in uQview.");
   assert.equal(L.defaultLine(L.defaultState({ code: 0, output: { default: false, current: "org.kde.gwenview.desktop" } })), "Pictures open in Gwenview.");
   assert.equal(L.defaultLine(L.defaultState({ code: 0, output: { default: false, current: "" } })), "No app is set to open pictures.");
   assert.equal(L.defaultLine(null), "Couldn't check which app opens pictures.");

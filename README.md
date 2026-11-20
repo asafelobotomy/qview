@@ -1,4 +1,4 @@
-# Qview
+# uQview
 
 A fast picture viewer for [uQ](https://github.com/asafelobotomy/uq), in the family of uQ's native
 apps. It replaces Gwenview as uQ's image viewer and brings back marking up screenshots.
@@ -18,7 +18,7 @@ apps. It replaces Gwenview as uQ's image viewer and brings back marking up scree
   **details** (`I`), **show in folder**, full screen (`F11`), drag and drop.
 - **uQ theme**: colours, corner radius, fonts and icon theme follow uQ's theme live; elsewhere it
   follows the desktop palette.
-- **uQ Settings page** (Apps › Qview): make Qview the default picture app, the order of pictures,
+- **uQ Settings page** (Apps › uQview): make uQview the default picture app, the order of pictures,
   wrap-around, thumbnails, background (theme, black, checkerboard), enlarging small pictures,
   how mark-ups are saved, asking before the trash.
 
@@ -28,13 +28,13 @@ AVIF, HEIF, JPEG XL, EXR, PSD, XCF and more through `qt6-imageformats` and `kima
 ## Command line
 
 ```
-qview [FILE|FOLDER]...        view pictures (a folder opens at its first picture)
-qview --markup FILE           open FILE straight in Mark up (uQ's screenshot preview uses it)
-qview config show|set [--json] KEY VALUE
-qview default status|set [--json]
+uqview [FILE|FOLDER]...        view pictures (a folder opens at its first picture)
+uqview --markup FILE           open FILE straight in Mark up (uQ's screenshot preview uses it)
+uqview config show|set [--json] KEY VALUE
+uqview default status|set [--json]
 ```
 
-Settings live in `~/.config/qview/config.toml`.
+Settings live in `~/.config/uqview/config.toml`.
 
 ## Building
 
@@ -45,11 +45,11 @@ cargo build --release --workspace
 sudo scripts/install-files.sh
 ```
 
-Or install `qview` from the AUR.
+Or install `uqview` from the AUR.
 
 ## Testing
 
-`cargo test` (the rules in `qview-core`), `node --test tests/*/*.test.mjs` (the window's and
+`cargo test` (the rules in `uqview-core`), `node --test tests/*/*.test.mjs` (the window's and
 the Settings page's pure logic), and `qmltestrunner -import tests/uq/stub -input tests/uq/tst_page.qml`
 (the Settings page with a fake uQ). CI also starts the window offscreen and fails on any QML error.
 
