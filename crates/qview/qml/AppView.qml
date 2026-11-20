@@ -391,10 +391,14 @@ Item {
         anchors.centerIn: parent
         modal: true
         title: "Move to the trash?"
+        // A set width: the Basic style's own sizing loops between the title and the buttons.
+        implicitWidth: Math.min(parent.width - 32, 360)
         standardButtons: QQC2.Dialog.Ok | QQC2.Dialog.Cancel
         onAccepted: app.backend.trash(app.path)
         QQC2.Label {
             text: L.baseName(app.path)
+            width: confirmTrash.availableWidth
+            elide: Text.ElideMiddle
             color: Theme.text
             textFormat: Text.PlainText
         }

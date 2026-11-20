@@ -354,6 +354,8 @@ Rectangle {
         anchors.centerIn: parent
         modal: true
         title: "Discard your marks?"
+        // A set width: the Basic style's own sizing loops between the title and the buttons.
+        implicitWidth: Math.min(parent.width - 32, 360)
         standardButtons: QQC2.Dialog.Discard | QQC2.Dialog.Cancel
         onDiscarded: {
             close();
