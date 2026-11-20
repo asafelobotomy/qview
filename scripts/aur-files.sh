@@ -9,7 +9,7 @@
 set -eu
 
 tag=${1:?usage: scripts/aur-files.sh vX.Y.Z [DIR]}
-dir=${2:-packaging/aur/qview}
+dir=${2:-packaging/aur/uqview}
 repo=${GITHUB_REPOSITORY:-asafelobotomy/qview}
 version=${tag#v}
 case $version in

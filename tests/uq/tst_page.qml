@@ -1,4 +1,4 @@
-// Loads the Qview page with a fake ctx (as uQ Settings would):
+// Loads the uQview page with a fake ctx (as uQ Settings would):
 //   QT_QPA_PLATFORM=offscreen /usr/lib/qt6/bin/qmltestrunner -import tests/uq/stub -input tests/uq/tst_page.qml
 // tests/uq/shots.sh runs it with shotsDir set, to save a screenshot.
 import QtQuick
@@ -33,7 +33,7 @@ Item {
     }
 
     TestCase {
-        name: "QviewPage"
+        name: "uQviewPage"
         when: windowShown
 
         function find(item, pred) {
@@ -49,7 +49,7 @@ Item {
 
         function test_loads_and_sets() {
             fake.calls = [];
-            loader.setSource("../../uq/pages/qview/Page.qml", { ctx: fake.ctx });
+            loader.setSource("../../uq/pages/uqview/Page.qml", { ctx: fake.ctx });
             tryVerify(() => loader.status === Loader.Ready);
             // The page reads both commands through watch.
             tryVerify(() => fake.calls.some(c => c[0] === "watch" && c[1] === "config"));
@@ -61,7 +61,7 @@ Item {
             if (root.shotsDir !== "") {
                 wait(300);
                 const img = grabImage(root);
-                img.save(root.shotsDir + "/qview-page.png");
+                img.save(root.shotsDir + "/uqview-page.png");
             }
             loader.item.makeDefault();
             tryVerify(() => fake.calls.some(c => c[1] === "default-set"));

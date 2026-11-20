@@ -33,13 +33,13 @@ jobs:
         run: |
           v=${GITHUB_REF_NAME#v}
           mkdir -p dist
-          cp target/release/qview "dist/qview-$v-x86_64-linux"
-          (cd dist && sha256sum qview-* > SHA256SUMS)
+          cp target/release/uqview "dist/uqview-$v-x86_64-linux"
+          (cd dist && sha256sum uqview-* > SHA256SUMS)
       - name: Publish
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release create "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" --title "Qview ${GITHUB_REF_NAME#v}" --generate-notes dist/*
+          gh release create "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" --title "uQview ${GITHUB_REF_NAME#v}" --generate-notes dist/*
   aur:
     needs: release
     if: startsWith(github.ref, 'refs/tags/v')

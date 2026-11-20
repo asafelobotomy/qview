@@ -39,21 +39,21 @@ jobs:
           pacman -Syu --noconfirm --needed git rust clang base-devel qt6-base qt6-declarative qt6-svg \
             qt6-imageformats breeze-icons imagemagick
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - run: cargo clippy -p qview --all-targets -- -D warnings
-      - run: cargo test -p qview
+      - run: cargo clippy -p uqview --all-targets -- -D warnings
+      - run: cargo test -p uqview
       - name: The window starts, loads every QML file and shows a picture
         run: |
-          cargo build -p qview
+          cargo build -p uqview
           mkdir -p /tmp/pics
           magick -size 640x400 gradient:'#3e8ef7'-'#e5484d' /tmp/pics/a.png
           magick -size 300x300 xc:'#46a758' /tmp/pics/b.jpg
-          QT_FORCE_STDERR_LOGGING=1 QT_QPA_PLATFORM=offscreen timeout 6 ./target/debug/qview /tmp/pics/a.png 2>&1 | tee /tmp/gui.log || true
-          QT_FORCE_STDERR_LOGGING=1 QT_QPA_PLATFORM=offscreen timeout 6 ./target/debug/qview --markup /tmp/pics/b.jpg 2>&1 | tee -a /tmp/gui.log || true
+          QT_FORCE_STDERR_LOGGING=1 QT_QPA_PLATFORM=offscreen timeout 6 ./target/debug/uqview /tmp/pics/a.png 2>&1 | tee /tmp/gui.log || true
+          QT_FORCE_STDERR_LOGGING=1 QT_QPA_PLATFORM=offscreen timeout 6 ./target/debug/uqview --markup /tmp/pics/b.jpg 2>&1 | tee -a /tmp/gui.log || true
           ! grep -E "ReferenceError|TypeError|unavailable|Unable to assign|is not installed|is not a type|Cannot assign" /tmp/gui.log
       - name: The command line answers
         run: |
-          export QVIEW_CONFIG=/tmp/qview.toml
-          ./target/debug/qview --version
-          ./target/debug/qview config set --json sort date | grep -q '"ok":true'
-          ./target/debug/qview config show --json | grep -q '"sort":"date"'
-          ! ./target/debug/qview config set --json sort random
+          export UQVIEW_CONFIG=/tmp/uqview.toml
+          ./target/debug/uqview --version
+          ./target/debug/uqview config set --json sort date | grep -q '"ok":true'
+          ./target/debug/uqview config show --json | grep -q '"sort":"date"'
+          ! ./target/debug/uqview config set --json sort random

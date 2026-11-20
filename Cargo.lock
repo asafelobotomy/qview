@@ -400,28 +400,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "qview"
-version = "0.1.0"
-dependencies = [
- "cxx",
- "cxx-qt",
- "cxx-qt-build",
- "cxx-qt-lib",
- "qview-core",
- "serde_json",
-]
-
-[[package]]
-name = "qview-core"
-version = "0.1.0"
-dependencies = [
- "serde",
- "serde_json",
- "tempfile",
- "toml",
-]
-
-[[package]]
 name = "r-efi"
 version = "6.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -654,6 +632,28 @@ name = "unicode-width"
 version = "0.2.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ca718471876992059f251e33aafc334346ada08042b7661dd1fe313a9bced557"
+
+[[package]]
+name = "uqview"
+version = "0.1.1"
+dependencies = [
+ "cxx",
+ "cxx-qt",
+ "cxx-qt-build",
+ "cxx-qt-lib",
+ "serde_json",
+ "uqview-core",
+]
+
+[[package]]
+name = "uqview-core"
+version = "0.1.1"
+dependencies = [
+ "serde",
+ "serde_json",
+ "tempfile",
+ "toml",
+]
 
 [[package]]
 name = "which"
