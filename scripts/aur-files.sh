@@ -10,7 +10,7 @@ set -eu
 
 tag=${1:?usage: scripts/aur-files.sh vX.Y.Z [DIR]}
 dir=${2:-packaging/aur/uqview}
-repo=${GITHUB_REPOSITORY:-asafelobotomy/qview}
+repo=${GITHUB_REPOSITORY:-asafelobotomy/uqview}
 version=${tag#v}
 case $version in
     *-*) echo "$tag is a pre-release: the AUR gets stable releases only"; exit 0 ;;
