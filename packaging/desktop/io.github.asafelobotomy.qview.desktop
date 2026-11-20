@@ -1,0 +1,18 @@
+[Desktop Entry]
+Type=Application
+Name=Qview
+GenericName=Image Viewer
+Comment=View pictures, mark them up and set them as your wallpaper
+Exec=qview %U
+TryExec=qview
+Icon=qview
+Terminal=false
+Categories=Graphics;Viewer;Qt;
+Keywords=image;picture;photo;viewer;screenshot;markup;annotate;wallpaper;
+MimeType=image/png;image/jpeg;image/gif;image/webp;image/bmp;image/tiff;image/svg+xml;image/avif;image/heif;image/heic;image/jxl;image/apng;image/x-icon;image/vnd.microsoft.icon;image/x-tga;image/x-portable-anymap;image/x-portable-bitmap;image/x-portable-graymap;image/x-portable-pixmap;image/x-xbitmap;image/x-xpixmap;image/x-exr;image/x-dds;image/qoi;image/jp2;image/vnd.adobe.photoshop;image/x-xcf;
+StartupWMClass=io.github.asafelobotomy.qview
+Actions=markup;
+
+[Desktop Action markup]
+Name=Mark up
+Exec=qview --markup %f

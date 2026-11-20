@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#b48ead"/>
+      <stop offset="1" stop-color="#5e81ac"/>
+    </linearGradient>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#2e2a3d"/>
+      <stop offset="1" stop-color="#433c58"/>
+    </linearGradient>
+    <clipPath id="lens"><circle cx="58" cy="58" r="30"/></clipPath>
+  </defs>
+  <rect x="6" y="6" width="116" height="116" rx="28" fill="url(#bg)"/>
+  <!-- The lens of the Q: a small landscape. -->
+  <circle cx="58" cy="58" r="30" fill="url(#sky)"/>
+  <g clip-path="url(#lens)">
+    <circle cx="70" cy="45" r="7" fill="#f5c26b"/>
+    <path d="M24 84 L46 56 L58 70 L68 60 L94 88 Z" fill="#9cc48a"/>
+    <path d="M24 88 L52 66 L72 88 Z" fill="#6fa36a"/>
+  </g>
+  <circle cx="58" cy="58" r="30" fill="none" stroke="#f4f1fa" stroke-width="9"/>
+  <!-- The tail of the Q. -->
+  <path d="M78 78 L98 98" stroke="#f4f1fa" stroke-width="11" stroke-linecap="round"/>
+</svg>
