@@ -13,5 +13,6 @@ pub mod ffi {
         fn uqview_render_markup(src: &str, marks: &str, dst: &str, clipboard: bool) -> String;
         fn uqview_register_types();
         fn uqview_set_icon_theme(name: &str);
+        fn uqview_forward_to_running(request: &str) -> bool;
     }
 }

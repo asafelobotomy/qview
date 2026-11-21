@@ -1,14 +1,19 @@
 #include "uqview/cpp/app.h"
+#include "uqview/cpp/instance.h"
 #include "uqview/cpp/markupcanvas.h"
 #include "uqview/cpp/paint.h"
 
 #include <QClipboard>
+#include <QDir>
+#include <QLocalServer>
+#include <QLocalSocket>
 #include <QFileInfo>
 #include <QGuiApplication>
 #include <QIcon>
 #include <QImageReader>
 #include <QImageWriter>
 #include <QJsonDocument>
+#include <QJsonArray>
 #include <QJsonObject>
 #include <QMimeData>
 #include <QQuickWindow>
@@ -166,6 +171,97 @@ rust::String uqview_render_markup(rust::Str src, rust::Str marks, rust::Str dst,
 void uqview_register_types()
 {
     qmlRegisterType<MarkupCanvas>("org.uqview.paint", 1, 0, "MarkupCanvas");
+    qmlRegisterSingletonInstance("org.uqview.instance", 1, 0, "Instance", Instance::get());
+}
+
+Instance *Instance::get()
+{
+    static Instance *one = new Instance(qApp);
+    return one;
+}
+
+void Instance::setBusy(bool b)
+{
+    if (b == m_busy)
+        return;
+    m_busy = b;
+    emit busyChanged();
+}
+
+namespace {
+QString instanceSocket()
+{
+    // $XDG_RUNTIME_DIR: only this user can reach it. Without one every start gets a window.
+    const QString dir = qEnvironmentVariable("XDG_RUNTIME_DIR");
+    if (dir.isEmpty() || !QDir::isAbsolutePath(dir) || !QDir(dir).exists())
+        return {};
+    return dir + QStringLiteral("/uqview.socket");
+}
+
+void bringForward()
+{
+    for (QWindow *w : QGuiApplication::allWindows()) {
+        if (!qobject_cast<QQuickWindow *>(w) || !w->isVisible())
+            continue;
+        if (w->windowState() & Qt::WindowMinimized)
+            w->setWindowStates(w->windowStates() & ~Qt::WindowMinimized);
+        w->show();
+        w->raise();
+        w->requestActivate();
+    }
+}
+
+void answer(QLocalSocket *peer)
+{
+    if (!peer->canReadLine())
+        return;
+    const QJsonObject req = QJsonDocument::fromJson(peer->readLine()).object();
+    if (Instance::get()->busy()) {
+        peer->write("busy\n");
+    } else {
+        Instance::get()->deliver(QString::fromUtf8(QJsonDocument(req.value("paths").toArray()).toJson(QJsonDocument::Compact)),
+                                 req.value("markup").toBool());
+        bringForward();
+        peer->write("ok\n");
+    }
+    peer->flush();
+    peer->disconnectFromServer();
+}
+} // namespace
+
+bool uqview_forward_to_running(rust::Str request)
+{
+    const QString path = instanceSocket();
+    if (path.isEmpty())
+        return false;
+    {
+        QLocalSocket probe;
+        probe.connectToServer(path);
+        if (probe.waitForConnected(1000)) {
+            probe.write(QByteArray(request.data(), static_cast<qsizetype>(request.size())) + "\n");
+            probe.waitForBytesWritten(1000);
+            // "ok": the open window took it. "busy" (in Mark up), or no answer: open our own window,
+            // and leave the socket to the window that has it.
+            return probe.waitForReadyRead(3000) && probe.readLine().trimmed() == "ok";
+        }
+    }
+    // Nobody answered: a socket left by a window that crashed is stale, so take it over.
+    auto *server = new QLocalServer(qApp);
+    server->setSocketOptions(QLocalServer::UserAccessOption);
+    if (!server->listen(path)) {
+        QLocalServer::removeServer(path);
+        if (!server->listen(path))
+            return false;
+    }
+    QObject::connect(server, &QLocalServer::newConnection, server, [server] {
+        while (QLocalSocket *peer = server->nextPendingConnection()) {
+            QObject::connect(peer, &QLocalSocket::disconnected, peer, &QObject::deleteLater);
+            QObject::connect(peer, &QLocalSocket::readyRead, peer, [peer] { answer(peer); });
+            answer(peer);
+        }
+    });
+    QObject::connect(qApp, &QCoreApplication::aboutToQuit, server, [server] { server->close(); });
+    return false;
 }
 
 void uqview_set_icon_theme(rust::Str name)

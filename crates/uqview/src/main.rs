@@ -15,7 +15,17 @@ mod backend;
 mod theme;
 
 fn main() {
-    let cmd = match args::parse(std::env::args().skip(1)) {
+    // `--new-window`: skip handing the pictures to an open uQview.
+    let mut new_window = false;
+    let argv: Vec<String> = std::env::args()
+        .skip(1)
+        .filter(|a| {
+            let nw = a == "--new-window";
+            new_window |= nw;
+            !nw
+        })
+        .collect();
+    let cmd = match args::parse(argv) {
         Ok(c) => c,
         Err(e) => {
             eprintln!("uqview: {e}\n\n{}", args::USAGE);
@@ -30,8 +40,13 @@ fn main() {
         Cmd::DefaultStatus { json } => default_status(json),
         Cmd::DefaultSet { json } => default_set(json),
         Cmd::View { paths, markup } => {
+            let request = serde_json::json!({
+                "paths": paths.iter().map(|p| uqview_core::folder::absolute(p).to_string_lossy().into_owned()).collect::<Vec<_>>(),
+                "markup": markup,
+            })
+            .to_string();
             backend::set_start(paths, markup);
-            window();
+            window(if new_window { None } else { Some(request) });
         }
     }
 }
@@ -116,11 +131,16 @@ fn fail(json: bool, msg: &str) -> ! {
     std::process::exit(2);
 }
 
-fn window() {
+fn window(forward: Option<String>) {
     // The "Basic" Qt Quick Controls style draws from the palette, which Theme sets per item.
     QQuickStyle::set_style(&QString::from("Basic"));
     let mut app = QGuiApplication::new();
     app::ffi::uqview_describe_application(env!("CARGO_PKG_VERSION"));
+    // One window per session: a picture opened while uQview is open shows there (unless it is
+    // in Mark up, whose unsaved marks stay put: then this start gets its own window).
+    if forward.is_some_and(|r| app::ffi::uqview_forward_to_running(&r)) {
+        return;
+    }
     app::ffi::uqview_register_types();
     // Qt 6.4 doesn't search qrc:/qt/qml on its own (6.5 does); the app's module lives there.
     // SAFETY: no other thread exists yet.

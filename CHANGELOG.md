@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.1.2
+
+One window per session: a picture opened while uQview is open shows in that window (with its
+folder) and brings it forward, instead of a second uQview. While that window is in Mark up, a new
+picture gets its own window, so unsaved marks are never replaced. `uqview --markup FILE` (uQ's
+screenshot preview) opens Mark up in the open window the same way. `uqview --new-window` opens
+another window regardless.
+
 ## 0.1.1
 
 Renamed from Qview to uQview: the command, the package, the desktop entry

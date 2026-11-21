@@ -3,6 +3,7 @@
 import QtQuick
 import QtQuick.Dialogs
 import org.uqview.app
+import org.uqview.instance
 
 Window {
     id: win
@@ -30,6 +31,22 @@ Window {
         onOpenRequested: dialog.open()
         onFullscreenToggled: win.visibility = win.visibility === Window.FullScreen ? Window.Windowed : Window.FullScreen
         onQuitRequested: win.close()
+    }
+
+    // One window per session: pictures opened while uQview is open come here. Busy while in
+    // Mark up, so a picture opened then gets its own window and the marks aren't lost.
+    Binding {
+        target: Instance
+        property: "busy"
+        value: view.marking
+    }
+    Connections {
+        target: Instance
+        function onOpenRequested(paths, markup) {
+            backend.openJson(paths);
+            if (markup)
+                Qt.callLater(view.startMarkup);
+        }
     }
 
     // Back in the window after a while away: the folder may have changed.

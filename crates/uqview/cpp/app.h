@@ -17,3 +17,8 @@ rust::String uqview_render_markup(rust::Str src, rust::Str marks, rust::Str dst,
 void uqview_register_types();
 // Use uQ's icon theme (from its tokens) when it names one that's installed.
 void uqview_set_icon_theme(rust::Str name);
+// One window per session: hands `request` ({"paths": [absolute...], "markup": bool} as JSON) to
+// the uQview already open and returns true (this start should exit). False when there is none
+// (this start now listens for later ones) or when it is in Mark up (this start opens its own).
+// Call after the QGuiApplication exists.
+bool uqview_forward_to_running(rust::Str request);
