@@ -3,6 +3,8 @@ use cxx_qt_build::{CxxQtBuilder, QmlFile, QmlModule};
 fn main() {
     let files = [
         "qml/Main.qml",
+        "qml/Tab.qml",
+        "qml/TabStrip.qml",
         "qml/AppView.qml",
         "qml/Viewer.qml",
         "qml/Markup.qml",

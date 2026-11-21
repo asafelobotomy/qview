@@ -3,7 +3,7 @@
 | Path | What |
 |---|---|
 | `crates/uqview-core` | pure: `folder` (listing, natural sort), `config`, `trash` (freedesktop home trash + undo), `markup` (copy names), `defaults` (MIME types, xdg-mime), `wallpaper` (uqctl command), `args` |
-| `crates/uqview` | the `uqview` binary: cxx-qt `Backend` (`src/backend.rs`), C++ picture work (`cpp/`: clipboard, image info, mark-up renderer `paint.cpp` shared by the preview `MarkupCanvas` and the saved file), QML in `qml/` (`logic.js` holds the pure rules) |
+| `crates/uqview` | the `uqview` binary: cxx-qt `Backend` (`src/backend.rs`, one per tab), C++ picture work (`cpp/`: clipboard, image info, mark-up renderer `paint.cpp` shared by the preview `MarkupCanvas` and the saved file), QML in `qml/` (`logic.js` holds the pure rules) |
 | `uq/pages/uqview` | the uQ Settings page (`uq_api` 3), everything through `uqview config` / `uqview default` |
 
 Rules: keep `uqview-core` pure (no Qt, no processes); the window starts fast, so no Kirigami;

@@ -180,14 +180,6 @@ Instance *Instance::get()
     return one;
 }
 
-void Instance::setBusy(bool b)
-{
-    if (b == m_busy)
-        return;
-    m_busy = b;
-    emit busyChanged();
-}
-
 namespace {
 QString instanceSocket()
 {
@@ -216,14 +208,10 @@ void answer(QLocalSocket *peer)
     if (!peer->canReadLine())
         return;
     const QJsonObject req = QJsonDocument::fromJson(peer->readLine()).object();
-    if (Instance::get()->busy()) {
-        peer->write("busy\n");
-    } else {
-        Instance::get()->deliver(QString::fromUtf8(QJsonDocument(req.value("paths").toArray()).toJson(QJsonDocument::Compact)),
-                                 req.value("markup").toBool());
-        bringForward();
-        peer->write("ok\n");
-    }
+    Instance::get()->deliver(QString::fromUtf8(QJsonDocument(req.value("paths").toArray()).toJson(QJsonDocument::Compact)),
+                             req.value("markup").toBool());
+    bringForward();
+    peer->write("ok\n");
     peer->flush();
     peer->disconnectFromServer();
 }
@@ -240,8 +228,8 @@ bool uqview_forward_to_running(rust::Str request)
         if (probe.waitForConnected(1000)) {
             probe.write(QByteArray(request.data(), static_cast<qsizetype>(request.size())) + "\n");
             probe.waitForBytesWritten(1000);
-            // "ok": the open window took it. "busy" (in Mark up), or no answer: open our own window,
-            // and leave the socket to the window that has it.
+            // "ok": the open window took it (in a new tab). No answer: open our own window, and
+            // leave the socket to the window that has it.
             return probe.waitForReadyRead(3000) && probe.readLine().trimmed() == "ok";
         }
     }

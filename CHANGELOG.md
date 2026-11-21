@@ -2,11 +2,20 @@
 
 ## 0.1.2
 
-One window per session: a picture opened while uQview is open shows in that window (with its
-folder) and brings it forward, instead of a second uQview. While that window is in Mark up, a new
-picture gets its own window, so unsaved marks are never replaced. `uqview --markup FILE` (uQ's
-screenshot preview) opens Mark up in the open window the same way. `uqview --new-window` opens
-another window regardless.
+**Tabs.** One uQview window per session: a picture opened while uQview is open (from the file
+manager, uQ's screenshot preview, Open… or a drop) gets its own tab in that window and brings it
+forward, instead of starting a second uQview. Each tab keeps its own folder, place and Mark up, so
+marks in one tab stay as they are while you look at another; a dot on a tab marks unsaved marks.
+A picture already open in a tab is shown there rather than opened twice. `Ctrl+W` closes a tab
+(middle-click or × too), `Ctrl+Tab`/`Ctrl+Shift+Tab` or `Ctrl+PgDown`/`Ctrl+PgUp` switch, + opens
+pictures in a new tab. The tab row shows once two or more tabs are open.
+
+**Never lose marks.** Closing Mark up, a tab or the window with marks not yet saved asks *Save
+your marks?* with Save (Enter), Discard and Cancel (Esc). Save saves as the settings say (a copy
+by default) and then carries on closing.
+
+Dialogs, menus and tooltips now use uQ's colours (they were drawn in the default light style).
+`uqview --new-window` opens a separate window regardless.
 
 ## 0.1.1
 

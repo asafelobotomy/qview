@@ -20,6 +20,15 @@ void MarkupCanvas::setSource(const QString &s)
     if (s == m_source)
         return;
     m_source = s;
+    if (s.isEmpty()) {
+        // Mark up closed: drop the picture (and don't ask Qt to open no file).
+        m_full = QImage();
+        m_shown = m_sample = QImage();
+        m_shownFor = m_realSize = QSize();
+        Q_EMIT sourceChanged();
+        update();
+        return;
+    }
     QImageReader r(s);
     r.setAutoTransform(true);
     const QSize size = r.size();

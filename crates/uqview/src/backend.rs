@@ -6,7 +6,8 @@ use std::collections::HashSet;
 use std::path::{Path, PathBuf};
 use std::pin::Pin;
 use std::process::{Command, Stdio};
-use std::sync::OnceLock;
+use std::sync::Mutex;
+use std::sync::atomic::{AtomicBool, Ordering};
 
 use cxx_qt::{CxxQtType, Threading};
 use cxx_qt_lib::QString;
@@ -35,7 +36,6 @@ pub mod qobject {
         #[qproperty(QString, files_json)]
         #[qproperty(i32, index)]
         /// Started with `--markup`: open straight in Mark up.
-        #[qproperty(bool, start_markup)]
         #[qproperty(bool, can_set_wallpaper)]
         #[qproperty(bool, can_undo)]
         /// The extensions Qt can read, as a JSON array (for the Open dialog's filter).
@@ -49,6 +49,13 @@ pub mod qobject {
         /// List the folder again, staying on the same picture (it may have changed on disk).
         #[qinvokable]
         fn reload(self: Pin<&mut Backend>);
+        /// What the command line asked to open, as `{"paths": [...], "markup": bool}`; the
+        /// window's first tab takes it, later calls get "".
+        #[qinvokable]
+        fn take_start(self: &Backend) -> QString;
+        /// Re-read the settings (another tab changed them).
+        #[qinvokable]
+        fn refresh_config(self: Pin<&mut Backend>);
         /// Move a picture to the trash; `notice` says how it went.
         #[qinvokable]
         fn trash(self: Pin<&mut Backend>, path: &QString);
@@ -92,11 +99,15 @@ struct Start {
     markup: bool,
 }
 
-static START: OnceLock<Start> = OnceLock::new();
+static START: Mutex<Option<Start>> = Mutex::new(None);
+/// One theme watcher for the window, however many tabs (each tab has its own Backend).
+static THEME_WATCHED: AtomicBool = AtomicBool::new(false);
 
-/// What the command line asked to open; read once by the window's backend.
+/// What the command line asked to open; taken once, by the window's first tab.
 pub fn set_start(paths: Vec<PathBuf>, markup: bool) {
-    let _ = START.set(Start { paths, markup });
+    if let Ok(mut s) = START.lock() {
+        *s = Some(Start { paths, markup });
+    }
 }
 
 #[derive(Default)]
@@ -105,7 +116,6 @@ pub struct BackendRust {
     config_json: QString,
     files_json: QString,
     index: i32,
-    start_markup: bool,
     can_set_wallpaper: bool,
     can_undo: bool,
     suffixes_json: QString,
@@ -140,6 +150,9 @@ impl cxx_qt::Initialize for Backend {
         apply_icon_theme(&tokens);
         self.as_mut()
             .set_theme_json(QString::from(&tokens.to_string()));
+        if THEME_WATCHED.swap(true, Ordering::Relaxed) {
+            return;
+        }
         let qt = self.qt_thread();
         theme::watch(path, move |tokens| {
             qt.queue(move |b| {
@@ -150,12 +163,6 @@ impl cxx_qt::Initialize for Backend {
             })
             .is_ok()
         });
-
-        if let Some(start) = START.get() {
-            self.as_mut().set_start_markup(start.markup);
-            let paths = start.paths.clone();
-            self.as_mut().open_paths(&paths);
-        }
     }
 }
 
@@ -221,6 +228,32 @@ impl Backend {
             .map(PathBuf::from)
             .collect();
         self.open_paths(&paths);
+    }
+
+    fn take_start(&self) -> QString {
+        let Some(start) = START.lock().ok().and_then(|mut s| s.take()) else {
+            return QString::default();
+        };
+        let paths: Vec<String> = start
+            .paths
+            .iter()
+            .map(|p| p.to_string_lossy().into_owned())
+            .collect();
+        QString::from(&json!({ "paths": paths, "markup": start.markup }).to_string())
+    }
+
+    fn refresh_config(mut self: Pin<&mut Self>) {
+        let c = Config::load(config::path().as_deref());
+        if c.to_json() == self.config.to_json() {
+            return;
+        }
+        let resort = c.sort != self.config.sort || c.sort_descending != self.config.sort_descending;
+        self.as_mut().load_config();
+        if resort && let Some(cur) = self.current() {
+            let (sort, desc) = (self.config.sort, self.config.sort_descending);
+            let (files, index) = folder::around(&cur, &self.exts, sort, desc);
+            self.as_mut().publish(files, index);
+        }
     }
 
     fn reload(mut self: Pin<&mut Self>) {

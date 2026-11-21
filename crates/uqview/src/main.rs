@@ -136,8 +136,7 @@ fn window(forward: Option<String>) {
     QQuickStyle::set_style(&QString::from("Basic"));
     let mut app = QGuiApplication::new();
     app::ffi::uqview_describe_application(env!("CARGO_PKG_VERSION"));
-    // One window per session: a picture opened while uQview is open shows there (unless it is
-    // in Mark up, whose unsaved marks stay put: then this start gets its own window).
+    // One window per session: a picture opened while uQview is open shows there, in a new tab.
     if forward.is_some_and(|r| app::ffi::uqview_forward_to_running(&r)) {
         return;
     }
