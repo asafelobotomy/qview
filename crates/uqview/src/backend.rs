@@ -146,7 +146,7 @@ impl cxx_qt::Initialize for Backend {
             .set_can_set_wallpaper(wallpaper::uqctl().is_some());
 
         let path = theme::tokens_path();
-        let tokens = theme::load(path.as_ref());
+        let tokens = theme::load(path.as_deref());
         apply_icon_theme(&tokens);
         self.as_mut()
             .set_theme_json(QString::from(&tokens.to_string()));

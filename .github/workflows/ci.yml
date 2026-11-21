@@ -11,6 +11,8 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - run: rustup toolchain install stable --profile minimal -c rustfmt,clippy
+      # the vendored uq-theme (uQ's native/uq-theme) is exactly the pinned release
+      - run: scripts/check-uq-theme.sh 1.0.0 crates/uqview/src/uq_theme.rs
       - run: cargo fmt --all --check
       - run: cargo clippy --all-targets -- -D warnings
       - run: cargo test

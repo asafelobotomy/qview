@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- AppStream metadata: what software centres (GNOME Software, Discover, bindaru) show for the app. -->
+<component type="desktop-application">
+  <id>io.github.asafelobotomy.uqview</id>
+  <name>uQview</name>
+  <summary>View pictures, mark them up and set them as your wallpaper</summary>
+  <description>
+    <p>uQview is a fast picture viewer for the uQ desktop. Pictures open in tabs in one window, in uQ&#x27;s theme.</p>
+    <p>Mark up a screenshot with arrows, boxes, text and highlights, then save or copy it, or set any picture as the wallpaper.</p>
+  </description>
+  <launchable type="desktop-id">io.github.asafelobotomy.uqview.desktop</launchable>
+  <icon type="stock">uqview</icon>
+  <url type="homepage">https://github.com/asafelobotomy/uqview</url>
+  <url type="bugtracker">https://github.com/asafelobotomy/uqview/issues</url>
+  <developer id="io.github.asafelobotomy">
+    <name>asafelobotomy</name>
+  </developer>
+  <categories>
+    <category>Graphics</category>
+    <category>Viewer</category>
+  </categories>
+  <keywords>
+    <keyword>image</keyword>
+    <keyword>picture</keyword>
+    <keyword>photo</keyword>
+    <keyword>viewer</keyword>
+    <keyword>markup</keyword>
+    <keyword>wallpaper</keyword>
+  </keywords>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>GPL-3.0-or-later</project_license>
+  <content_rating type="oars-1.1"/>
+  <releases>
+    <release version="0.1.2" date="2026-11-21">
+      <description>
+        <p>Pictures opened while uQview is open get a tab in the same window, each with its own markup, and unsaved marks are never lost without asking.</p>
+      </description>
+    </release>
+    <release version="0.1.1" date="2026-11-20">
+      <description>
+        <p>Fixes.</p>
+      </description>
+    </release>
+    <release version="0.1.0" date="2026-11-20">
+      <description>
+        <p>First release.</p>
+      </description>
+    </release>
+  </releases>
+</component>
