@@ -19,6 +19,8 @@ Item {
     readonly property string path: index >= 0 && index < files.length ? files[index] : ""
     readonly property var info: path !== "" ? JSON.parse(backend.info(path)) : ({})
     readonly property bool chrome: !fullscreen || reveal.active
+    // Mark up is open with marks not yet saved: closing this tab or the window asks first.
+    readonly property bool unsaved: marking && markup.dirty
 
     signal openRequested()
     signal fullscreenToggled()
@@ -45,6 +47,22 @@ Item {
         if (path !== "" && !viewer.failed)
             marking = true;
     }
+    // Save the marks as Mark up's Save would; true when they were saved (Mark up then closes).
+    function saveMarks() {
+        markup.save("save");
+        return !unsaved;
+    }
+    function discardMarks() {
+        markup.reset();
+        marking = false;
+    }
+    // Keys to Mark up when it is open, else to the viewer.
+    function refocus() {
+        if (marking)
+            markup.forceActiveFocus();
+        else
+            forceActiveFocus();
+    }
     function notice(kind, text) {
         toast.show(kind, text);
     }
@@ -55,7 +73,6 @@ Item {
             toast.show(kind, text);
         }
     }
-    Component.onCompleted: if (backend.startMarkup) Qt.callLater(app.startMarkup)
 
     focus: true
     Keys.onPressed: function (ev) {

@@ -7,6 +7,10 @@ apps. It replaces Gwenview as uQ's image viewer and brings back marking up scree
   buttons, the thumbnail strip, or clicking the window's edges). Pictures are decoded at screen
   size first and the next and previous ones are decoded ahead, so stepping is instant; the
   full-size decode only happens when you zoom past it. Animated GIF, WebP and APNG play.
+- **Tabs**: pictures opened while uQview is open (from the file manager, uQ's screenshot
+  preview, Open… or a drop) open in a new tab of the same window, each with its own folder and
+  Mark up. `Ctrl+W` closes a tab, `Ctrl+Tab` switches; a dot marks a tab with unsaved marks, and
+  closing it (or the window) asks to save or discard them first.
 - **Zoom and pan**: mouse wheel or pinch zooms around the pointer, `+`/`-`, `1` for 100 %,
   `F` or `0` to fit, double-click toggles, drag to pan. `R`/`Shift+R` turn the view.
 - **Mark up** (`M`): pen, highlighter, arrow, line, box, ellipse, text, numbered badges,
@@ -28,8 +32,10 @@ AVIF, HEIF, JPEG XL, EXR, PSD, XCF and more through `qt6-imageformats` and `kima
 ## Command line
 
 ```
-uqview [FILE|FOLDER]...        view pictures (a folder opens at its first picture)
+uqview [FILE|FOLDER]...        view pictures (a folder opens at its first picture); with uQview
+                               already open, they open in a new tab there
 uqview --markup FILE           open FILE straight in Mark up (uQ's screenshot preview uses it)
+uqview --new-window FILE       open a separate window instead of a tab
 uqview config show|set [--json] KEY VALUE
 uqview default status|set [--json]
 ```

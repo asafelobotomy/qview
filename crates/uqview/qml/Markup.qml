@@ -349,21 +349,30 @@ Rectangle {
         }
     }
 
+    // Closing Mark up with marks not yet saved: save them, or discard them, or stay.
     QQC2.Dialog {
         id: discard
         anchors.centerIn: parent
         modal: true
-        title: "Discard your marks?"
+        focus: true
+        title: "Save your marks?"
         // A set width: the Basic style's own sizing loops between the title and the buttons.
-        implicitWidth: Math.min(parent.width - 32, 360)
-        standardButtons: QQC2.Dialog.Discard | QQC2.Dialog.Cancel
+        implicitWidth: Math.min(parent.width - 32, 380)
+        standardButtons: QQC2.Dialog.Save | QQC2.Dialog.Discard | QQC2.Dialog.Cancel
+        onAccepted: mk.save("save")
+        onOpened: forceActiveFocus()
+        onClosed: mk.forceActiveFocus()
+        // Enter saves (Esc cancels). Inside the dialog: a modal dialog blocks shortcuts outside it.
+        Shortcut { sequences: ["Return", "Enter"]; enabled: discard.visible; onActivated: discard.accept() }
         onDiscarded: {
             close();
             mk.reset();
             mk.closed();
         }
         QQC2.Label {
-            text: "The picture stays as it was."
+            width: discard.availableWidth
+            wrapMode: Text.Wrap
+            text: "If you discard them, the picture stays as it was."
             color: Theme.text
         }
     }

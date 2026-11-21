@@ -223,5 +223,33 @@ function r1(v) {
 }
 
 // For Node tests.
+// ---- Tabs
+
+// The tab to show after closing tab `closing` of `count` (`current` is shown now): the same tab
+// when another one closes, else the one that takes the closed tab's place, else the one before.
+// -1 when none is left.
+function afterClose(closing, current, count) {
+    if (count <= 1)
+        return -1;
+    if (closing < current)
+        return current - 1;
+    if (closing > current)
+        return current;
+    return Math.min(closing, count - 2);
+}
+
+// The tab already showing the one picture asked for (`paths`: what was asked; `shown`: each
+// tab's picture, "" for none), or -1. Several pictures always get a new tab.
+function findShown(shown, paths) {
+    if (paths.length !== 1)
+        return -1;
+    return shown.indexOf(paths[0]);
+}
+
+// The tab after `i` of `n` in direction `dir`, wrapping.
+function cycle(i, n, dir) {
+    return n > 0 ? ((i + dir) % n + n) % n : -1;
+}
+
 if (typeof module !== "undefined")
-    module.exports = { STEPS: STEPS, fitScale: fitScale, stepZoom: stepZoom, zoomAround: zoomAround, clampPos: clampPos, step: step, baseName: baseName, fileUrl: fileUrl, counter: counter, percent: percent, dims: dims, formatDate: formatDate, unit: unit, strokeWidth: strokeWidth, textSize: textSize, badgeSize: badgeSize, TOOLS: TOOLS, toolByKey: toolByKey, nextNumber: nextNumber, begin: begin, extend: extend, worthKeeping: worthKeeping, cropFrom: cropFrom, document: document };
+    module.exports = { STEPS: STEPS, fitScale: fitScale, stepZoom: stepZoom, zoomAround: zoomAround, clampPos: clampPos, step: step, baseName: baseName, fileUrl: fileUrl, counter: counter, percent: percent, dims: dims, formatDate: formatDate, unit: unit, strokeWidth: strokeWidth, textSize: textSize, badgeSize: badgeSize, TOOLS: TOOLS, toolByKey: toolByKey, nextNumber: nextNumber, begin: begin, extend: extend, worthKeeping: worthKeeping, cropFrom: cropFrom, document: document, afterClose: afterClose, findShown: findShown, cycle: cycle };

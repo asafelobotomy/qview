@@ -77,3 +77,27 @@ test("marks", () => {
   assert.equal(L.cropFrom({ x1: 1, y1: 1, x2: 2, y2: 2 }, 100, 100), null);
   assert.deepEqual(JSON.parse(L.document([], null)), { marks: [], crop: null });
 });
+
+test("tabs: which tab shows after one closes", () => {
+  // Closing another tab keeps the shown one (its index shifts if it was after).
+  assert.equal(L.afterClose(0, 2, 4), 1);
+  assert.equal(L.afterClose(3, 1, 4), 1);
+  // Closing the shown tab shows the one that takes its place, or the one before at the end.
+  assert.equal(L.afterClose(1, 1, 4), 1);
+  assert.equal(L.afterClose(3, 3, 4), 2);
+  // The last one.
+  assert.equal(L.afterClose(0, 0, 1), -1);
+});
+
+test("tabs: a picture already open is shown, not opened again", () => {
+  assert.equal(L.findShown(["/a.png", "/b.png"], ["/b.png"]), 1);
+  assert.equal(L.findShown(["/a.png"], ["/c.png"]), -1);
+  assert.equal(L.findShown(["/a.png", "/b.png"], ["/a.png", "/b.png"]), -1);
+  assert.equal(L.findShown(["/a.png"], []), -1);
+});
+
+test("tabs: next and previous wrap", () => {
+  assert.equal(L.cycle(2, 3, 1), 0);
+  assert.equal(L.cycle(0, 3, -1), 2);
+  assert.equal(L.cycle(0, 0, 1), -1);
+});
