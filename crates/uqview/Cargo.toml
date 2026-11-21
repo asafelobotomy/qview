@@ -16,6 +16,7 @@ uqview-core = { path = "../uqview-core" }
 cxx = "1.0"
 cxx-qt = "0.10"
 cxx-qt-lib = { version = "0.10", features = ["qt_gui", "qt_qml", "qt_quickcontrols"] }
+libc = "0.2"
 serde_json = "1"
 
 [build-dependencies]

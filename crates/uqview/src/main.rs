@@ -13,6 +13,9 @@ use uqview_core::defaults;
 mod app;
 mod backend;
 mod theme;
+#[allow(dead_code)] // vendored whole; this app uses part of it
+#[rustfmt::skip]
+mod uq_theme;
 
 fn main() {
     // `--new-window`: skip handing the pictures to an open uQview.

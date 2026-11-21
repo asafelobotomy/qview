@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+- Follows uQ's theme with a file watch instead of checking the file once a second (uQ's shared uq-theme module, `crates/uqview/src/uq_theme.rs`); it also catches uQ swapping the whole theme folder.
+- AppStream metadata, so software centres show uQview.
+
 ## 0.1.2
 
 **Tabs.** One uQview window per session: a picture opened while uQview is open (from the file

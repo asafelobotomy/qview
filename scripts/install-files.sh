@@ -8,6 +8,8 @@ d=${DESTDIR:-}
 install -Dm755 "$here/target/release/uqview" "$d/usr/bin/uqview"
 install -Dm644 "$here/packaging/desktop/io.github.asafelobotomy.uqview.desktop" \
     "$d/usr/share/applications/io.github.asafelobotomy.uqview.desktop"
+install -Dm644 "$here/packaging/desktop/io.github.asafelobotomy.uqview.metainfo.xml" \
+    "$d/usr/share/metainfo/io.github.asafelobotomy.uqview.metainfo.xml"
 install -Dm644 "$here/packaging/desktop/uqview.svg" "$d/usr/share/icons/hicolor/scalable/apps/uqview.svg"
 install -Dm644 -t "$d/usr/share/uq/settings/pages/uqview/" "$here"/uq/pages/uqview/*.qml \
     "$here/uq/pages/uqview/logic.js" "$here/uq/pages/uqview/page.toml"
